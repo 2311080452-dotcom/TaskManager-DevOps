@@ -43,6 +43,12 @@ async function peticion(url, opciones = {}) {
   return datos;
 }
 
+// El servidor guarda las fechas en UTC; se muestran en la hora local del usuario.
+function fechaLocal(utc) {
+  const d = new Date(String(utc).replace(" ", "T") + "Z");
+  return isNaN(d) ? utc : d.toLocaleString("es-MX", { dateStyle: "short", timeStyle: "short" });
+}
+
 function escapar(texto) {
   const div = document.createElement("div");
   div.textContent = texto ?? "";
@@ -79,7 +85,7 @@ function pintarTareas() {
       <div class="meta">
         <span class="etiqueta ${t.prioridad}">${t.prioridad}</span>
         ${t.responsable ? `<span>👤 ${escapar(t.responsable)}</span>` : ""}
-        <span>Actualizada: ${t.fecha_actualizacion}</span>
+        <span>Actualizada: ${fechaLocal(t.fecha_actualizacion)}</span>
       </div>
       <div class="tarea-acciones">
         <select class="sel-estado" aria-label="Cambiar estado">${opciones}</select>
