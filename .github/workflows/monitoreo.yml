@@ -1,11 +1,14 @@
 name: Monitoreo
 
 # Revisa cada 6 horas que la aplicación publicada responda.
-# Configura la variable de repositorio APP_URL
+# URL de producción por defecto: https://taskmanager-devops-fxl0.onrender.com
+# Se puede cambiar con la variable de repositorio APP_URL
 # (Settings > Secrets and variables > Actions > Variables),
 # por ejemplo: https://taskmanager-devops.onrender.com
 
 on:
+  push:
+    branches: [main]
   schedule:
     - cron: '0 */6 * * *'
   workflow_dispatch:
@@ -16,7 +19,7 @@ jobs:
     steps:
       - name: Verificar disponibilidad y tiempo de respuesta
         env:
-          APP_URL: ${{ vars.APP_URL }}
+          APP_URL: ${{ vars.APP_URL || 'https://taskmanager-devops-fxl0.onrender.com' }}
         run: |
           if [ -z "$APP_URL" ]; then
             echo "Configura la variable APP_URL para activar el monitoreo."

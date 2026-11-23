@@ -4,7 +4,7 @@ Sistema web para la gestión de tareas de **TechSolutions**, desarrollado aplica
 
 ![CI](https://github.com/2311080452-dotcom/TaskManager-DevOps/actions/workflows/ci.yml/badge.svg)
 
-**Aplicación publicada:** https://taskmanager-devops.onrender.com  <!-- reemplazar con su URL real -->
+**Aplicación publicada:** https://taskmanager-devops-fxl0.onrender.com
 
 ## Funcionalidades
 
