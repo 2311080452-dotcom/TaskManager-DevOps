@@ -1,0 +1,35 @@
+name: Monitoreo
+
+# Revisa cada 6 horas que la aplicación publicada responda.
+# Configura la variable de repositorio APP_URL
+# (Settings > Secrets and variables > Actions > Variables),
+# por ejemplo: https://taskmanager-devops.onrender.com
+
+on:
+  schedule:
+    - cron: '0 */6 * * *'
+  workflow_dispatch:
+
+jobs:
+  verificar:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Verificar disponibilidad y tiempo de respuesta
+        env:
+          APP_URL: ${{ vars.APP_URL }}
+        run: |
+          if [ -z "$APP_URL" ]; then
+            echo "Configura la variable APP_URL para activar el monitoreo."
+            exit 0
+          fi
+          # El plan gratuito de Render "duerme" el servicio: se reintenta.
+          for i in 1 2 3; do
+            if curl -fsS -o health.json -w "%{http_code} %{time_total}\n" \
+                 --max-time 60 "$APP_URL/health" > resultado.txt; then
+              break
+            fi
+            sleep 20
+          done
+          echo "Código HTTP y tiempo (s):"; cat resultado.txt || true
+          echo "Respuesta /health:"; cat health.json || true
+          grep -q '"status":"ok"' health.json

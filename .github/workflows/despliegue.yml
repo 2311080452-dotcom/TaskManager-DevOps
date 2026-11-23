@@ -1,0 +1,37 @@
+name: Despliegue Continuo
+
+# Se ejecuta cuando hay cambios en main. Primero corre las pruebas y,
+# solo si pasan, avisa a Render para que publique la nueva versión.
+# Requiere el secreto RENDER_DEPLOY_HOOK_URL
+# (Render > tu servicio > Settings > Deploy Hook).
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  pruebas:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install -r requirements.txt
+      - run: pytest
+
+  desplegar:
+    needs: pruebas
+    runs-on: ubuntu-latest
+    steps:
+      - name: Disparar despliegue en Render
+        env:
+          HOOK: ${{ secrets.RENDER_DEPLOY_HOOK_URL }}
+        run: |
+          if [ -z "$HOOK" ]; then
+            echo "No se configuró RENDER_DEPLOY_HOOK_URL; se omite el despliegue."
+            exit 0
+          fi
+          curl -fsS -X POST "$HOOK"
+          echo "Despliegue solicitado a Render."
