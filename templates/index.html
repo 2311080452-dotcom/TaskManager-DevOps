@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TaskManager | TechSolutions</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>✅</text></svg>">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+  <header class="encabezado">
+    <div>
+      <h1>TaskManager</h1>
+      <p>Gestión centralizada de tareas · TechSolutions</p>
+    </div>
+    <div class="resumen" id="resumen">
+      <span class="chip pendiente" data-resumen="Pendiente">0 pendientes</span>
+      <span class="chip proceso" data-resumen="En proceso">0 en proceso</span>
+      <span class="chip terminada" data-resumen="Terminada">0 terminadas</span>
+    </div>
+  </header>
+
+  <main class="contenedor">
+    <section class="panel" aria-labelledby="titulo-form">
+      <h2 id="titulo-form">Nueva tarea</h2>
+      <form id="form-tarea" novalidate>
+        <input type="hidden" id="tarea-id">
+
+        <label for="nombre">Nombre de la tarea *</label>
+        <input type="text" id="nombre" maxlength="100" placeholder="Ej. Elaborar documentación">
+        <small class="error-campo" id="error-nombre"></small>
+
+        <label for="descripcion">Descripción</label>
+        <textarea id="descripcion" rows="3" maxlength="500" placeholder="Detalles de la actividad"></textarea>
+
+        <label for="responsable">Responsable</label>
+        <input type="text" id="responsable" maxlength="60" placeholder="Nombre del empleado">
+
+        <div class="fila">
+          <div>
+            <label for="prioridad">Prioridad</label>
+            <select id="prioridad">
+              {% for p in prioridades %}
+              <option value="{{ p }}" {% if p == 'Media' %}selected{% endif %}>{{ p }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div>
+            <label for="estado">Estado</label>
+            <select id="estado">
+              {% for e in estados %}
+              <option value="{{ e }}">{{ e }}</option>
+              {% endfor %}
+            </select>
+          </div>
+        </div>
+
+        <div class="acciones">
+          <button type="submit" class="btn primario" id="btn-guardar">Guardar tarea</button>
+          <button type="button" class="btn secundario oculto" id="btn-cancelar">Cancelar edición</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="panel listado" aria-labelledby="titulo-lista">
+      <div class="lista-cabecera">
+        <h2 id="titulo-lista">Tareas registradas</h2>
+        <div class="filtros">
+          <select id="filtro-estado" aria-label="Filtrar por estado">
+            <option value="">Todos los estados</option>
+            {% for e in estados %}<option value="{{ e }}">{{ e }}</option>{% endfor %}
+          </select>
+          <select id="filtro-prioridad" aria-label="Filtrar por prioridad">
+            <option value="">Todas las prioridades</option>
+            {% for p in prioridades %}<option value="{{ p }}">{{ p }}</option>{% endfor %}
+          </select>
+        </div>
+      </div>
+      <ul id="lista-tareas" class="tareas"></ul>
+      <p id="vacio" class="vacio oculto">No hay tareas registradas.</p>
+    </section>
+  </main>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+  <footer class="pie">TaskManager v1.0.0 · Proyecto DevOps con GitHub</footer>
+
+  <script>
+    window.ESTADOS = {{ estados | list | tojson }};
+  </script>
+  <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>
